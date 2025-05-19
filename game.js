@@ -11,16 +11,17 @@ var gGame = {
  secsPassed: 0
 }
 var gMines =[]
-const MINE = `<img src="img/mine.png"/>`
-const FLAG = `<img src="img/flag.png"/>`
-const ONE = `<img src ="img/one.png"/>`
-const TWO = `<img src ="img/two.png"/>`
-const THREE = `<img src ="img/three.png"/>`
-const FOUR = `<img src ="img/four.png"/>`
-const FIVE = `<img src ="img/five.png"/>`
-const SIX = `<img src ="img/six.png"/>`
-const SEVEN = `<img src ="img/seven.png"/>`
-const EIGHT = `<img src ="img/eight.png"/>`
+const MINE = `<img class ="number" src="img/mine.png"/>`
+const FLAG = `<img class ="number" src="img/flag.png"/>`
+const ONE = `<img class ="number" src ="img/one.png"/>`
+const TWO = `<img class ="number" src ="img/two.png"/>`
+const THREE = `<img class ="number" src ="img/three.png"/>`
+const FOUR = `<img class ="number" src ="img/four.png"/>`
+const FIVE = `<img class ="number" src ="img/five.png"/>`
+const SIX = `<img class ="number" src ="img/six.png"/>`
+const SEVEN = `<img class ="number" src ="img/seven.png"/>`
+const EIGHT = `<img class ="number" src ="img/eight.png"/>`
+const SMILE = `<img class ="face" src ="img/smile.png"/>`
 
 var elContainer = document.querySelector('.board-container')
 elContainer.addEventListener("contextmenu", (e) => {e.preventDefault()});
@@ -84,6 +85,7 @@ return count
 function renderBoard(board){
 var strHtml = ''
 strHtml+=`<table><tbody>`
+strHtml+=`<thead><tr><td class="title" colspan="${gLevel.SIZE}"><button class="restartButton" onClick="restart()">${SMILE}</button></td></tr></thead>`
 for(var i = 0;i<board.length;i++){
 strHtml+=`<tr>`
 for(var j = 0;j<board[0].length;j++){
@@ -99,19 +101,29 @@ elContainer.innerHTML = strHtml
 }
 function onCellClicked(elCell,i,j){
 if(!gGame.isOn) return
+if(gBoard[i][j].isRevealed) return
 if(gBoard[i][j].isMarked) return
 gBoard[i][j].isRevealed = true
+gGame.revealedCount++
 renderCell(elCell,i,j)
 expandReveal(gBoard,i,j)
+console.log('revaled count: '+gGame.revealedCount)
+if(checkGameOver()) console.log('winner!')   
 }
 function onCellMarked(elCell, i, j){
     if(!gGame.isOn) return
     if(gBoard[i][j].isRevealed) return
 gBoard[i][j].isMarked = !gBoard[i][j].isMarked
+gGame.markedCount += gBoard[i][j].isMarked ? 1 : -1;
 renderCell(elCell,i,j)
+if(checkGameOver()) console.log('winner!')
 }
 function checkGameOver(){
-
+for(var i = 0;i<gMines.length;i++){
+    if(!gMines[i].isMarked) return false
+}
+if(!(gGame.revealedCount === gLevel.SIZE**2 - gMines.length)) return false
+return true
 }
 function expandReveal(board,i, j){
 if(board[i][j].isMine || board[i][j].minesAroundCount>0) return 
@@ -120,9 +132,11 @@ for(var i = cell.i-1;i<=cell.i+1;i++){
     for(var j = cell.j-1;j<=cell.j+1;j++){
         if(i === -1 || j === -1  || i === gBoard.length || j === gBoard.length) continue
         if(gBoard[i][j].isRevealed) continue
+        if(gBoard[i][j].isMarked) continue
         const className = `.cell.cell-${i}-${j}`
         const currCell = document.querySelector(className)
         gBoard[i][j].isRevealed = true
+        gGame.revealedCount++
         renderCell(currCell,i,j)
         expandReveal(board,i,j)
     }
@@ -152,10 +166,12 @@ function getCellContext(cell){
 function renderCell(elCell,i,j) {
     elCell.innerHTML = getCellContext(gBoard[i][j])
    // console.log(elCell)
-     if(gBoard[i][j].isMine && gGame.isOn) {
+     if(gBoard[i][j].isMine && gGame.isOn && gBoard[i][j].isRevealed) {
      gGame.isOn = false
      elCell.style.backgroundColor = 'red'
      renderMines()
+     var face = document.querySelector('.face')
+     face.src = 'img/dead.png'
      }
      else if(elCell.style.backgroundColor!='red'){
         elCell.style.backgroundColor = 'gray'
@@ -173,5 +189,20 @@ for(var i = 0;i<gBoard.length;i++){
         } 
     }
 }
+}
+function restart(){
+ gBoard = []
+ gLevel = {
+ SIZE: 4,
+ MINES: 2
+}
+ gGame = {
+ isOn: true,
+ revealedCount: 0,
+ markedCount: 0,
+ secsPassed: 0
+}
+gMines =[]
+onInit()    
 }
 
