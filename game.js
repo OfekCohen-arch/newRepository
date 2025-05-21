@@ -23,9 +23,9 @@ const SEVEN = `<img class ="number" src ="img/seven.png"/>`
 const EIGHT = `<img class ="number" src ="img/eight.png"/>`
 const SMILE = `<img class ="face" src ="img/smile.png"/>`
 
-var elContainer = document.querySelector('.board-container')
+const elContainer = document.querySelector('.board-container')
 elContainer.addEventListener("contextmenu", (e) => {e.preventDefault()});
-
+var interval
 
 function onInit(){
 gBoard = buildBoard()
@@ -83,9 +83,12 @@ for(var i = cell.i-1;i<=cell.i+1;i++){
 return count
 }
 function renderBoard(board){
+elContainer.style.width = `${gLevel.SIZE*40}px`
 var strHtml = ''
+strHtml+=`<div class="timeAndButtonContainer">
+      <button class="restartButton" onClick="restart()">${SMILE}</button><h1 class = "timer">${gGame.secsPassed}</h1>
+    </div>`
 strHtml+=`<table><tbody>`
-strHtml+=`<thead><tr><td class="title" colspan="${gLevel.SIZE}"><button class="restartButton" onClick="restart()">${SMILE}</button></td></tr></thead>`
 for(var i = 0;i<board.length;i++){
 strHtml+=`<tr>`
 for(var j = 0;j<board[0].length;j++){
@@ -103,12 +106,23 @@ function onCellClicked(elCell,i,j){
 if(!gGame.isOn) return
 if(gBoard[i][j].isRevealed) return
 if(gBoard[i][j].isMarked) return
+if(gGame.revealedCount === 0){
+     interval = setInterval(()=>{
+    const timer = document.querySelector('.timer')
+    gGame.secsPassed++
+    timer.innerText = gGame.secsPassed
+    },1000)
+}
 gBoard[i][j].isRevealed = true
 gGame.revealedCount++
 renderCell(elCell,i,j)
 expandReveal(gBoard,i,j)
 console.log('revaled count: '+gGame.revealedCount)
-if(checkGameOver()) console.log('winner!')   
+if(checkGameOver()){
+var face = document.querySelector('.face')
+face.src = 'img/sunGlasses.png'
+clearInterval(interval)     
+}   
 }
 function onCellMarked(elCell, i, j){
     if(!gGame.isOn) return
@@ -116,7 +130,11 @@ function onCellMarked(elCell, i, j){
 gBoard[i][j].isMarked = !gBoard[i][j].isMarked
 gGame.markedCount += gBoard[i][j].isMarked ? 1 : -1;
 renderCell(elCell,i,j)
-if(checkGameOver()) console.log('winner!')
+if(checkGameOver()){
+var face = document.querySelector('.face')
+face.src = 'img/sunGlasses.png' 
+clearInterval(interval) 
+}
 }
 function checkGameOver(){
 for(var i = 0;i<gMines.length;i++){
@@ -169,6 +187,7 @@ function renderCell(elCell,i,j) {
      if(gBoard[i][j].isMine && gGame.isOn && gBoard[i][j].isRevealed) {
      gGame.isOn = false
      elCell.style.backgroundColor = 'red'
+     clearInterval(interval)
      renderMines()
      var face = document.querySelector('.face')
      face.src = 'img/dead.png'
@@ -191,11 +210,7 @@ for(var i = 0;i<gBoard.length;i++){
 }
 }
 function restart(){
- gBoard = []
- gLevel = {
- SIZE: 4,
- MINES: 2
-}
+gBoard = []
  gGame = {
  isOn: true,
  revealedCount: 0,
@@ -203,6 +218,26 @@ function restart(){
  secsPassed: 0
 }
 gMines =[]
+clearInterval(interval)
 onInit()    
+}
+function selectLevel(elLevel){
+switch(elLevel.className){
+case 'beginner': gLevel = {
+ SIZE: 4,
+ MINES: 2
+}
+break
+case 'medium': gLevel = {
+ SIZE: 8,
+ MINES: 14
+}
+break
+case 'expert': gLevel = {
+ SIZE: 12,
+ MINES: 32
+}
+}
+restart()
 }
 

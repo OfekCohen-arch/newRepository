@@ -8,6 +8,21 @@
 </head>
 <body onload="onInit()">
     <div class="board-container"></div>
-  <script src="game.js"></script>  
+    <div class="levels-container">
+      <h1 class="level-title">Choose a level:</h1>
+    </br>
+    <div class="level-container">
+    <input type="radio" onclick="selectLevel(this)" name="level" class="beginner" checked> beginner size 4X4 with 2 mines
+    </div>
+    </br>
+    <div class="level-container">
+    <input type="radio" onclick="selectLevel(this)" name="level" class="medium" > medium size 8X8 with 14 mines
+    </div>
+    </br>
+    <div class="level-container">
+    <input type="radio" onclick="selectLevel(this)" name="level" class="expert" > expert size 12X12 with 32 mines
+    </div>
+    </div>
+  <script src="game.js"></script> 
 </body>
 </html>

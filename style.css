@@ -1,8 +1,9 @@
-
+body{
+    display: flex;
+}
 table{
-    margin: 100px auto;
+    margin: 0px auto;
     border-collapse: collapse;
-    border-color: blue;
 }
 .cell {
 	width: 40px;
@@ -25,9 +26,36 @@ table{
     height: 40px;
     width: 40px;
 }
-.title{
+.timer{
+    height: 40px;
+    width: 100px;
+    display: block;
+    margin: auto;
+    border: 4px solid black;
+    text-align: center;
+    color: red;
+}
+.timeAndButtonContainer{
 background-color: lightgray;
 height: 60px;
 border: 4px solid black;
+display: flex
 }
-
+.board-container{
+    margin: 30px auto;
+}
+.levels-container{
+    width: 300px;
+    height: 300px;
+    background-color: lightgray;
+    margin-top: 30px;
+    border: 2px solid black;
+    font-family: Arial;
+}
+.level-title{
+    text-align: center;
+    color: black;
+}
+.level-container{
+border: 2px solid black;
+}
