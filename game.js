@@ -83,7 +83,7 @@ for(var i = cell.i-1;i<=cell.i+1;i++){
 return count
 }
 function renderBoard(board){
-elContainer.style.width = `${gLevel.SIZE*40}px`
+elContainer.style.width = `${gLevel.SIZE*60}px`
 var strHtml = ''
 strHtml+=`<div class="timeAndButtonContainer">
       <button class="restartButton" onClick="restart()">${SMILE}</button><h1 class = "timer">${gGame.secsPassed}</h1>
@@ -130,6 +130,7 @@ function onCellMarked(elCell, i, j){
 gBoard[i][j].isMarked = !gBoard[i][j].isMarked
 gGame.markedCount += gBoard[i][j].isMarked ? 1 : -1;
 renderCell(elCell,i,j)
+if(elCell.style.backgroundColor ==='gray') elCell.style.backgroundColor = 'lightgray'
 if(checkGameOver()){
 var face = document.querySelector('.face')
 face.src = 'img/sunGlasses.png' 
